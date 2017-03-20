@@ -7,6 +7,7 @@ package fr.miage.paris10.projetm1.helpu;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -143,8 +144,20 @@ public class SignupActivity extends AppCompatActivity {
             dialog.show();
         }else{
 
-            if (!validate()) {
+            if (!validate() ) {
                 onSignupFailed();
+                return;
+            }
+            if(_ufrSpinner.getSelectedItem().equals("Select UFR")){
+                Toast.makeText(getBaseContext(), "Error selected UFR", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if(_filiereSpinner.getSelectedItem().equals("Select Filliere")){
+                Toast.makeText(getBaseContext(), "Error selected Filliere", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if(_levelSpinner.getSelectedItem().equals("Select a level")){
+                Toast.makeText(getBaseContext(), "Error selected level", Toast.LENGTH_LONG).show();
                 return;
             }
 
@@ -208,6 +221,9 @@ public class SignupActivity extends AppCompatActivity {
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
         String reEnterPassword = _reEnterPasswordText.getText().toString();
+        String spinnerUfr = _ufrSpinner.getSelectedItem().toString();
+        String spinnerLevel = _levelSpinner.getSelectedItem().toString();
+        String spinnerFilliere = _filiereSpinner.getSelectedItem().toString();
 
         if (lastName.isEmpty() || lastName.length() < 2) {
             _lastNameText.setError("At least 2 characters");
@@ -215,6 +231,7 @@ public class SignupActivity extends AppCompatActivity {
         } else {
             _lastNameText.setError(null);
         }
+
 
         if (firstName.isEmpty() || firstName.length() < 2) {
             _firstNameText.setError("At least 2 characters");
@@ -298,7 +315,18 @@ public class SignupActivity extends AppCompatActivity {
                 });
     }
 
+    private void setSpinnerError(Spinner spinner, String error){
+        View selectedView = spinner.getSelectedView();
+        if (selectedView != null && selectedView instanceof TextView) {
+            spinner.requestFocus();
+            TextView selectedTextView = (TextView) selectedView;
+            selectedTextView.setError("error"); // any name of the error will do
+            selectedTextView.setTextColor(Color.RED); //text color in which you want your error message to be displayed
+            selectedTextView.setText(error); // actual error message
+            spinner.performClick(); // to open the spinner list if error is found.
 
+        }
+    }
     public void sendVerificationEmail() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 

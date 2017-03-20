@@ -14,6 +14,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -22,10 +25,8 @@ import com.google.firebase.database.FirebaseDatabase;
  */
 
 public class ProfileActivity extends AppCompatActivity{
-
     Button btnChangePassword, btnSendResetEmail, btnRemoveUser, btnPrintInfo, changePassword, sendEmail, remove, signOut;
     private EditText oldEmail, password, newPassword;
-    //private TextView print;
     private ProgressBar progressBar;
 
     private FirebaseAuth mFirebaseAuth;
@@ -74,29 +75,12 @@ public class ProfileActivity extends AppCompatActivity{
 
 
 
-       /* btnPrintInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                oldEmail.setVisibility(View.GONE);
-                password.setVisibility(View.GONE);
-                newPassword.setVisibility(View.GONE);
-                changePassword.setVisibility(View.GONE);
-                sendEmail.setVisibility(View.GONE);
-                remove.setVisibility(View.GONE);
-                print.setVisibility(View.VISIBLE);
-            }
-        });
-
-
-        print.setText("User");
-*/
-
 
         btnPrintInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), PrintInfoActivity.class);
-                final UserInformation userInfo = getIntent().getExtras().getParcelable("userInfo");
+                UserInformation userInfo = getIntent().getExtras().getParcelable("userInfo");
                 i.putExtra("user", userInfo);
                 startActivity(i);
 
@@ -201,29 +185,30 @@ public class ProfileActivity extends AppCompatActivity{
     }
 
     public void deleteUserData(String uid) {
-        mDatabaseReference.child("users").child(uid).removeValue();
+        mDatabaseReference.child(Constants.USERS_DB).child(uid).removeValue();
     }
 
-    public void deleteAccount() {
+    public void deleteAccount()  {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
         user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
+                    deleteAllHelp();
+                    deleteAllMsg();
                     deleteUserData(mFirebaseUser.getUid());
-                    Toast.makeText(ProfileActivity.this, "Your account has been deleted successfully", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ProfileActivity.this, Constants.SUCCES_DELETEACCOUNT, Toast.LENGTH_SHORT).show();
                     loadLogInView();
+
                     startActivity(new Intent(ProfileActivity.this, LoginActivity.class));
                     finish();
                     progressBar.setVisibility(View.GONE);
                 } else {
-                    Toast.makeText(ProfileActivity.this, "Failed to delete your account!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ProfileActivity.this, Constants.FAILED_DELETEACCOUNT, Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);
                 }
             }
         });
-
     }
 
     private void loadLogInView() {
@@ -245,8 +230,84 @@ public class ProfileActivity extends AppCompatActivity{
         progressBar.setVisibility(View.GONE);
     }
 
+    private void deleteAllHelp() {
+        final UserInformation userInfo = getIntent().getExtras().getParcelable("userInfo");
+        mDatabaseReference.child(Constants.BECOMEHELPER_DB)
+                .child(userInfo.getFilliere()).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                String name = dataSnapshot.getKey();
+                for (DataSnapshot data : dataSnapshot.getChildren() ) {
+                    String idTest = data.getKey();
+                    if (idTest.equals(userInfo.getId())) {
+                        mDatabaseReference.child(Constants.BECOMEHELPER_DB).child(userInfo.getFilliere()).child(name).child(userInfo.getId()).removeValue();
+                    }
+
+
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }});
+    }
+
+
+
+    private void deleteAllMsg() {
+
+        final UserInformation userInfo = getIntent().getExtras().getParcelable("userInfo");
+        mDatabaseReference.child(Constants.MESSAGES_DB).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Message message = dataSnapshot.getValue(Message.class);
+                if(message.getUserId().equals(userInfo.getId()) || message.getDestinataireID().equals(userInfo.getId())){
+                    mDatabaseReference.child(Constants.MESSAGES_DB).child(dataSnapshot.getKey()).removeValue();
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }});
+
+
+    }
+
 
 
 
 }
-

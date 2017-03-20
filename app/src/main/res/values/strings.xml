@@ -65,6 +65,7 @@
     <string name="signup_error_title">Error!</string>
     <string name="internet_error_message">You are not connected to Internet!</string>
     <string name="verify_email_error_message">You have not verified your email</string>
+    <string name="chbSave"> Save password ? </string>
 
     <string-array name="level_array">
         <item>Select a level</item>
