@@ -21,6 +21,12 @@ Elle permet aux étudiants d'aider ou bien de se faire aider en leur donnant la 
 ## Systeme de Build
 * [Gradle](https://gradle.org/)
 
+## Version 1.0.0-beta
+* Supprimer toutes les informations dans la base de donnée lorsqu'un utilisateur supprime son compte
+* Notification si un utilsateur souhaite aider plusieurs fois dans le même cours
+* Suppression du boutton Logout dans Profile Activity
+* Amélioration de la messagerie 
+
 ## Version 1.0.0-alpha.1
 * Application Fonctionnel 
 * Ajout d'une partie profil
