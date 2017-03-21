@@ -41,7 +41,7 @@ Elle permet aux étudiants d'aider ou bien de se faire aider en leur donnant la 
 
 L'application peut être téléchargée sur le site : https://jmedjid.github.io/helpu.github.io/
 
-ou directement [**ici**] (https://github.com/Jmedjid/helpu.github.io/blob/gh-pages/downloads/HelpU-v1.0.0-alpha.apk)
+ou directement [**ici**] (https://jmedjid.github.io/helpu.github.io/downloads/HelpU-v1.0.0-beta.apk)
 
 HelpU utilise android sdk version 25.0.2. Gradle télécharge automatiquement le sdk si vous avez déjà accepté les licences avec le SDK manager et que soit : 
 
